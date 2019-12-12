@@ -3,6 +3,10 @@
 - git push origin dy3.0
 - git push --set-upstream origin dy3.0
 
+- git tag -a dy3.0-rc.1 -m "dy3.0-rc.1"
+- git push origin dy3.0-rc.1
+
+
 # JPress 文档
 
 
