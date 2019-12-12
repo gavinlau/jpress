@@ -1,4 +1,6 @@
 # DY
+- git checkout -b dy3.0
+- git push origin dy3.0
 
 # JPress 文档
 
