@@ -6,6 +6,12 @@
 - git tag -a dy3.0-rc.1 -m "dy3.0-rc.1"
 - git push origin dy3.0-rc.1
 
+- tar zcvf my.tar.gz .
+- tar zxvf FileName.tar.gz
+
+- dy.conf
+- mysql  root/jpress
+- admin/dy@nanjing
 
 # JPress 文档
 
