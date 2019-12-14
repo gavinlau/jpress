@@ -1100,6 +1100,15 @@ CREATE TABLE `wechat_reply` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户自定义关键字回复表';
 
 
+# Dump of table area_manage
+# ------------------------------------------------------------
+CREATE TABLE `area_manage` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `user_id` int(11) unsigned NOT NULL COMMENT '区域经理ID',
+  `area_code` varchar(20) DEFAULT NULL COMMENT '区域码',
+  `area_name` varchar(256) DEFAULT NULL COMMENT '区域名',
+   primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域管理'
 
 
 

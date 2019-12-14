@@ -1,0 +1,7 @@
+id=io.jpress.addon.entre
+title=entre
+description=entre for dy
+author=gavin lau
+authorWebsite=
+version=1.0.2
+versionCode=2

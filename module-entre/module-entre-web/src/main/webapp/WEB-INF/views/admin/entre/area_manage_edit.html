@@ -1,0 +1,116 @@
+
+	#@layout()
+	#define css()
+	#@layout_css?()
+	<link rel="stylesheet" href="#(CPATH)/static/components/datepicker/css/bootstrap-datepicker3.min.css">
+	<link rel="stylesheet" href="#(CPATH)/static/components2/select-page/selectpage.css">
+	#end
+
+	#define script()
+	#@layout_script?()
+	<script src="#(CPATH)/static/components/datepicker/js/bootstrap-datepicker.min.js"></script>
+	<script src="#(CPATH)/static/components/datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+	<script src="#(CPATH)/static/components2/select-page/selectpage.js"></script>
+	<script src="#(CPATH)/static/components2/distpicker/distpicker.min.js"></script>
+	<script>
+		$("input[hint='date']").datepicker({
+	        format: 'yyyy-mm-dd',
+	        language: 'zh-CN'
+	    });
+	    
+	  function doSubmit() {
+        ajaxSubmit("#form", function (data) {
+            $("#entryId").attr("value", data.id);
+            toastr.success('内容保存成功。');
+        })
+      }  
+
+      $("#submit").on("click", function () {
+      	   var areaCode=$('#areaCode option:selected').val()
+
+		  var areaPairs=$('#areaCodeTarget').distpicker('getDistricts')
+		  var value_arr=Object.values(areaPairs);
+		  var idx=Object.keys(areaPairs).indexOf(areaCode);
+		  var areaName=value_arr[idx];
+
+
+		 // console.log(Object.values(areaPair)+"=====");
+		//  var areaName=Object.values(areaPair);
+		 // console.log(JSON.stringify(areaPair));
+
+		  $('#areaName').val(areaName);
+	       	doSubmit();
+	    })
+
+
+		ajaxGet("/admin/entre/area_manage/areaMngers",function (res) {
+			$('#spMngers').selectPage({
+				showField:'nickname',
+				keyField:'id',
+				data:res.users
+			});
+		},function (res) {
+
+		});
+
+	</script>
+    #end
+
+#define content()
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <h1>
+            编辑/新增
+            <small>Edit</small>
+        </h1>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header ">
+                        <h3 class="box-title"></h3>
+                    </div>
+                    <form class="form-horizontal form-setting" autocomplete="off"
+                          action="/admin/entre/area_manage/doSave"
+                          method="POST" id="form">
+                        <div class="box-body ">
+	                                <input type="hidden" id="entryId" name="id" value="#(areaManage.id ??)">
+							        <input type="hidden" id="areaName" name="areaName" value="#(areaManage.area_name ??)">
+
+									<div class="form-group">
+										<label class="col-sm-2 control-label">区域</label>
+										<div class="col-sm-6">
+											<div id="areaCodeTarget" data-toggle="distpicker" data-value-type="code">
+												<select id="areaCode" name="area_code" data-province="#(areaManage.area_code ??)"  class="form-control" id="province"></select>
+											</div>
+										</div>
+									</div>
+							      <div class="form-group">
+		                                <label class="col-sm-2 control-label">区域经理</label>
+		                                <div class="col-sm-6">
+										   <input type="input" id="spMngers" name="user_id" class="form-control" value="#(areaManage.user_id ??)"
+		                                           placeholder="">
+		                                </div>
+								  </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <div class="col-sm-offset-2 col-sm-10 submit-block">
+                                <div class="box-submit">
+                                    <button id="submit" type="button" class="btn btn-primary">提交</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-footer -->
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+#end

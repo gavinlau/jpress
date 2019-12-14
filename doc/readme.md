@@ -13,6 +13,27 @@
 - mysql  root/jpress
 - admin/dy@nanjing
 
+## Import module-entre
+- create database jpress3 and excute area_mange in db.sql
+- add code in start and root pom.xml
+- for hot deploy add code in start pom.xml
+## Import jpress-addons-entre
+## Run dy local
+- APP appidi8thcGWps7Ki5Sh2/secretDWrKVEopj96eLckR
+- SMS n8fhjIPA9hbE0XhR/TTwFXz2AOyKvo2jpcBFXvxqHgLKNPgO SMS Template:SMS_180049533
+- webdomain config http://192.168.43.248:8080
+- update db table user remark to 2048
+- addon ver_back.html window.location.replace("http://192.168.43.248:8081/ver_rst");
+- config biz admin role  dy/123456 Rights:area_manage AdminController
+- config biz district role js/123456 Rights:
+- add componets2
+
+## Deploy to server dy.51redwing.net
+- update database
+- create database jpress3 character set utf8mb4 collate utf8mb4_general_ci;
+
+- utf8mb4
+
 # JPress 文档
 
 

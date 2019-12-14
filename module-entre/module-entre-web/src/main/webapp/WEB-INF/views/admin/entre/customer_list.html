@@ -1,0 +1,210 @@
+  #@layout()
+	
+	#define script()
+	<script>
+	
+	    function doDel(id) {
+	        ajaxGet("/admin/entre/area_manage/doDel/" + id);
+	    }
+	
+	    $("#batchDel").click(function () {
+	        var ids = getSelectedIds();
+	        if (ids == "") {
+                alert('您未选择任何条目');
+                return
+            }
+	        ajaxGet("/admin/entre/area_manage/doDelByIds?ids=" + ids);
+	    })
+        function showContact(remark,customerId,realName,idcard,mobile,email,address) {
+
+	        var contactStatus=remark.contactStatus;
+            var audit1=''
+            var audit2=''
+            if(contactStatus==='auditing'){
+                audit1='topay'
+                audit2='unaudited'
+            }
+            if(contactStatus==='paying'){
+                audit1='audited'
+                audit2='topay'
+            }
+
+	        var btnsHtml=audit1==''?'':'<p><a href="#" class="btn btn-warning"' +
+                ' onclick="audit('+0+','+customerId+',\''+audit1+'\')">审核通过</a><a href="#" class="btn btn-default" onclick="audit('+1+','+customerId+',\''+audit2+'\')">审核不通过</a></p>';
+            var verStatus=remark.verStatus;
+            var verStatusText=verStatus==='9'?'通过':'未实人认证'
+            var frontImgsrc=remark.frontImgsrc;
+            var backImgsrc=remark.backImgsrc;
+            var contactPicsList=remark.contactPicsList;
+            var picsListTxt="";
+            for(idx in contactPicsList){
+                picsListTxt+='<a target="_blank" href="'+contactPicsList[idx]+'"><img with="300px" height="400px" src="'+contactPicsList[idx]+'"></a>&nbsp;';
+            }
+
+            var proxyIdx=remark.proxyIdx;
+            var proxyStreetText=proxyIdx==='1'? '<p>代理街道：'+remark.proxyStreet+'</p>':''
+            var proxyCommunityText=(proxyIdx=='2'|| proxyIdx=='3')?'<p>代理社区：'+remark.proxyCommunity+'</p>':''
+
+            var payText="";
+
+            if(contactStatus==="paying"){
+              payText='<p>合同照片：</p>'+
+                '<h3>打款信息</h3>'+
+                '<p>打款银行：'+remark.payCardNo+'</p>'+
+                '<p>打款人：'+remark.payUserName+'</p>'
+            }
+            layer.open({
+                title:false,
+                area:['960px','800px'],
+                shadeClose:true,
+                content:'<div class="panel panel-default">' +
+                    '<div class="panel-heading">'+realName+'</div>'+
+                    '<div class="panel-body">' +
+                    '<h3>实人信息</h3>'+
+                    '<p>身份证：'+idcard+'</p>'+
+                    '<p>姓名：'+realName+'</p>'+
+                    '<p>电话：'+mobile+'</p>'+
+                    '<p>邮件：'+email+'</p>'+
+                    '<p>联系地址：'+address+'</p>'+
+                    '<p>认证信息：</p>'+
+                    '<a href="'+frontImgsrc+'"><img with="300px" height="400px" src="'+frontImgsrc+'"></a>'+
+                    '<a href="'+backImgsrc+'"><img with="300px" height="400px" src="'+backImgsrc+'"></a>'+
+                    '<h3>合同概要</h3>'+
+                    '<p>代理方式：'+remark.proxyName+'</p>'+
+                    '<p>代理地址：'+remark.proxyAreaName+'</p>'+
+                     proxyStreetText+
+                     proxyCommunityText+
+
+                    '<hr/>'+
+                     picsListTxt+
+                     payText+
+                     btnsHtml+
+                    '</div>'+
+                    '</div>'
+            });
+        }
+      function audit(flag,customerId,contactStatus) {
+             var contactText=flag===0?'审核通过':'审核不通过'
+	         layer.confirm('请确认操作'+contactText,{
+	            btn:['确认','取消']
+             },function () {
+                  ajaxGet('/admin/entre/area_manage/audit?customerId='+customerId+'&contactStatus='+contactStatus);
+             },function () {
+
+             });
+      }
+	</script>
+        #end
+#define content()
+<div class="content-wrapper">
+
+    <section class="content-header">
+        <h1>
+            <small>Items</small>
+        </h1>
+    </section>
+
+    <section class="content">
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body ">
+
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th style="width: 10px">
+	                                    <input name="dataItem" onchange="checkAll(this)" type="checkbox"/>
+	                                </th>
+	                                <th>主键ID</th>
+	                                <th>用户</th>
+	                                <th>区域</th>
+	                                <th>区域名</th>
+                                    <th>认证状态</th>
+                                    <th>合同状态</th>
+                                
+                            </tr>
+                            #for(entry : page.list)
+                            <script type="text/javascript">
+                                var remarkRaw#(entry.id)='#(entry.remark)';
+                                var json#(entry.id)='';
+                                if(remarkRaw#(entry.id) && remarkRaw#(entry.id)!='')
+                                {
+                                  var remark#(entry.id)=remarkRaw#(entry.id).replace(/&quot;/g,'\"');
+                                  console.log(remark#(entry.id)+"=====>")
+                                  json#(entry.id)=JSON.parse(remark#(entry.id));
+
+                                }
+                            </script>
+                            <tr class="jp-actiontr">
+                                <td><input class="dataItem" type="checkbox" value="#(entry.id)" />
+                                </td>
+                                <td>
+                                    <strong>
+                                        <a href="#"> #(entry.id ??) </a>
+                                    </strong>
+                                </td>
+	                                <td><a href="#" onclick="showContact(json#(entry.id),'#(entry.id)','#(entry.realname)','#(entry.idcard)','#(entry.mobile)','#(entry.email)','#(entry.address)')" > #(entry.username) </a></td>
+	                                <td>
+                                        <script>
+                                            if(json#(entry.id).proxyAreaCode)
+                                            {
+                                             document.write(json#(entry.id).proxyAreaCode)
+                                            }
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <script>
+                                            if(json#(entry.id).proxyAreaName)
+                                            {
+                                                document.write(json#(entry.id).proxyAreaName)
+                                            }
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <script>
+                                            var verText=json#(entry.id).verStatus==='9'?'已认证':'未认证'
+                                            document.write(verText)
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <script>
+                                            var contactStatusText=""
+                                            if(json#(entry.id).contactStatus==='unaudited')
+                                             contactStatusText="未提交"
+                                            if(json#(entry.id).contactStatus==='auditing')
+                                              contactStatusText="待合同审核"
+                                            if(json#(entry.id).contactStatus==='topay')
+                                              contactStatusText="待支付"
+                                            if(json#(entry.id).contactStatus==='paying')
+                                                contactStatusText="待支付审核"
+                                            if(json#(entry.id).contactStatus==='audited')
+                                               contactStatusText="已生效"
+                                            document.write(contactStatusText)
+                                        </script>
+                                    </td>
+                            </tr>
+                            #end
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-12">
+                            	 #@_paginate()
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+
+    </section>
+</div>
+#end
