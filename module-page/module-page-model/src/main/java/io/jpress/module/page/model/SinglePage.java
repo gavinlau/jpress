@@ -66,14 +66,15 @@ public class SinglePage extends BaseSinglePage<SinglePage> {
 
 
     public String getText() {
-        return StrUtil.escapeHtml(JsoupUtils.getText(getContent()));
+        return JsoupUtils.getText(getContent());
     }
 
     @Override
     public String getContent() {
         String content = super.getContent();
-        if (JPressConsts.EDIT_MODE_MARKDOWN.equals(getEditMode())) {
+        if (_isMarkdownMode()) {
             content = MarkdownUtils.toHtml(content);
+            content = JsoupUtils.clean(content);
         }
         return content;
     }
@@ -82,7 +83,9 @@ public class SinglePage extends BaseSinglePage<SinglePage> {
         return JPressConsts.EDIT_MODE_MARKDOWN.equals(getEditMode());
     }
 
-
+    public String getOrignalContent(){
+        return super.getContent();
+    }
 
     public List<String> getImages() {
         return JsoupUtils.getImageSrcs(getContent());

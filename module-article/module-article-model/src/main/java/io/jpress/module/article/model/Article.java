@@ -92,7 +92,7 @@ public class Article extends BaseArticle<Article> {
     }
 
     public String getText() {
-        return StrUtil.escapeHtml(JsoupUtils.getText(getContent()));
+        return JsoupUtils.getText(getContent());
     }
 
     @Override
@@ -108,6 +108,10 @@ public class Article extends BaseArticle<Article> {
 
     public boolean _isMarkdownMode() {
         return JPressConsts.EDIT_MODE_MARKDOWN.equals(getEditMode());
+    }
+
+    public String getOrignalContent(){
+        return super.getContent();
     }
 
 
@@ -185,13 +189,13 @@ public class Article extends BaseArticle<Article> {
 
     @Override
     public boolean save() {
-        CommonsUtils.escapeHtmlForAllAttrs(this, "content", "summary");
+        CommonsUtils.escapeModel(this, "content", "summary");
         return super.save();
     }
 
     @Override
     public boolean update() {
-        CommonsUtils.escapeHtmlForAllAttrs(this, "content", "summary");
+        CommonsUtils.escapeModel(this, "content", "summary");
         return super.update();
     }
 

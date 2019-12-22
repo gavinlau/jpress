@@ -15,9 +15,10 @@
  */
 package io.jpress.web.commons.finance;
 
-import com.jfinal.aop.Aop;
+import com.jfinal.aop.Inject;
 import com.jfinal.log.Log;
-import io.jpress.core.finance.OrderFinishedListener;
+import com.jfinal.plugin.activerecord.Db;
+import io.jpress.core.finance.OrderItemStatusChangeListener;
 import io.jpress.model.UserAmountStatement;
 import io.jpress.model.UserOrderItem;
 import io.jpress.service.UserAmountStatementService;
@@ -26,13 +27,19 @@ import io.jpress.service.UserService;
 import java.math.BigDecimal;
 
 
-public class DistProcessListener implements OrderFinishedListener {
+public class OrderDistProcesser implements OrderItemStatusChangeListener {
 
-    public static final Log LOG = Log.getLog(DistProcessListener.class);
+    public static final Log LOG = Log.getLog(OrderDistProcesser.class);
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private UserAmountStatementService statementService;
 
 
     @Override
-    public void onFinished(UserOrderItem orderItem) {
+    public void onStatusChanged(UserOrderItem orderItem) {
         BigDecimal distAmount = orderItem.getDistAmount().multiply(BigDecimal.valueOf(orderItem.getProductCount()));
 
         if (orderItem.isFinished() //交易结束，用户不能申请退款
@@ -45,16 +52,26 @@ public class DistProcessListener implements OrderFinishedListener {
                 && orderItem.getPayAmount().compareTo(distAmount) > 0 //支付金额必须大于分销金额
         ) {
 
+            boolean distSucess = Db.tx(() -> {
 
-            UserService userService = Aop.get(UserService.class);
-            UserAmountStatementService statementService = Aop.get(UserAmountStatementService.class);
+                // 流水检查
+                UserAmountStatement existStatement = statementService
+                        .findOneByUserIdAndRelative(orderItem.getDistUserId(), "user_order_item", orderItem.getId());
+                if (existStatement != null) {
+                    return false;
+                }
 
-            BigDecimal userAmount = userService.queryUserAmount(orderItem.getDistUserId());
 
-            //更新用于余额
-            if (userService.updateUserAmount(orderItem.getDistUserId(), userAmount,
-                    distAmount)) {
+                BigDecimal userAmount = userService.queryUserAmount(orderItem.getDistUserId());
 
+                //更新余额
+                if (!userService.updateUserAmount(orderItem.getDistUserId(), userAmount,
+                        distAmount)) {
+                    return false;
+
+                }
+
+                // 生成流水
                 UserAmountStatement statement = new UserAmountStatement();
                 statement.setUserId(orderItem.getDistUserId());
                 statement.setActionDesc(UserAmountStatement.ACTION_DIST);
@@ -66,8 +83,20 @@ public class DistProcessListener implements OrderFinishedListener {
                 statement.setNewAmount(userAmount.add(distAmount));
                 statement.setChangeAmount(distAmount);
 
-                statementService.save(statement);
+                if (statementService.save(statement) == null) {
+                    return false;
+                }
+
+
+                return true;
+            });
+
+
+
+            if (!distSucess) {
+                LOG.error("dist fail !!!");
             }
+
         }
     }
 }

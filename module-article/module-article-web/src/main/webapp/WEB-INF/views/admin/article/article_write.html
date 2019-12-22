@@ -30,13 +30,11 @@
         })
     });
 
-
     $(".tflag").each(function () {
         $(this).on('click', function () {
             $("#flag").val($(this).text());
         })
     });
-
 
     $(".submitBtn").on("click", function () {
         $("#articleStatus").val($(this).attr("data-status"));
@@ -49,7 +47,7 @@
             $("#articleId").attr("value", data.id);
             toastr.success('文章保存成功。');
         });
-    }
+    };
 
     $("#removeThumbnail").on("click", function () {
         $("#thumbnail").attr("src", "#(CPATH)/static/commons/img/nothumbnail.jpg");
@@ -133,12 +131,17 @@
                                 （<a href="#(article.url)" target="_blank">访问</a>）
                                 #end
                                 <input type="hidden" id="article-slug" name="article.slug" value="#(article.slug ??)">
-                                <a href="javascript:;" style="float: right;padding: 5px 0"
-                                   onclick="doChangeEditor('#(article.id ?? 0)')">切换编辑器</a>
+                                <a href="javascript:;" style="float: right;padding: 5px 0" onclick="doChangeEditor('#(article.id ?? 0)')">
+                                    #if(editMode && editMode == 'html')
+                                    使用 markdown 编辑
+                                    #else
+                                    可视化编辑
+                                    #end
+                                </a>
                             </div>
                             <div class="col-sm-12" style="z-index: 9999;">
                                 <textarea id="editor1" name="article.content"
-                                          style="height: 467px;width: 100%;background-color: white">#CKEditorContent(article.content ??)</textarea>
+                                          style="height: 467px;width: 100%;background-color: white">#EditorContent(article.orignalContent ??)</textarea>
                             </div>
                         </div>
                         <div class="form-group">

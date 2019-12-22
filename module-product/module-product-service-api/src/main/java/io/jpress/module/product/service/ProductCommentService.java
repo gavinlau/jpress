@@ -186,6 +186,7 @@ public interface ProductCommentService  {
     public boolean deleteByIds(Object... ids);
 
 
+    public void deleteCacheById(Object id);
     /**
      * count
      * @param status
@@ -203,4 +204,6 @@ public interface ProductCommentService  {
     public Page<ProductComment> paginateByProductIdInNormal(int page, int pagesize, long productId);
 
     public void doIncCommentReplyCount(long commentId);
+
+    public boolean doChangeStatus(Long id, int status);
 }

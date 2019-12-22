@@ -15,11 +15,11 @@
  */
 package io.jpress.core.finance;
 
-import io.jpress.model.UserOrderItem;
+import io.jpress.model.UserOrder;
 
 
-public interface OrderFinishedListener {
+public interface OrderStatusChangeListener {
 
-    public void onFinished(UserOrderItem orderItem);
+    public void onStatusChanged(UserOrder order);
 
 }

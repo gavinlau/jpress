@@ -18,8 +18,11 @@ package io.jpress.web.directive;
 import com.jfinal.template.Env;
 import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Scope;
+import io.jboot.utils.StrUtil;
+import io.jboot.web.controller.JbootControllerContext;
 import io.jboot.web.directive.annotation.JFinalDirective;
 import io.jboot.web.directive.base.JbootDirectiveBase;
+import io.jpress.JPressConsts;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -27,8 +30,8 @@ import org.apache.commons.lang3.StringUtils;
  * @version V1.0
  * @Package io.jpress.core.directives
  */
-@JFinalDirective("CKEditorContent")
-public class CKEditorContentDirective extends JbootDirectiveBase {
+@JFinalDirective("EditorContent")
+public class EditorContentDirective extends JbootDirectiveBase {
 
     private static final String[] originalChars = {"&lt;", "&gt;"};
     private static final String[] newChars = {"&amp;lt;", "&amp;gt;"};
@@ -37,12 +40,20 @@ public class CKEditorContentDirective extends JbootDirectiveBase {
     public void onRender(Env env, Scope scope, Writer writer) {
 
         String originalContent = getPara(0, scope);
-        if (originalContent == null) return;
+        if (originalContent == null) {
+            return;
+        }
 
+        String editMode = JbootControllerContext.get().getAttr("editMode");
+        if (StrUtil.isNotBlank(editMode) && !JPressConsts.EDIT_MODE_HTML.equals(editMode)){
+            renderText(writer,originalContent);
+        }
         //ckeditor 编辑器有个bug，自动把 &lt; 转化为 < 和 把 &gt; 转化为 >
         //因此，此处需要 把 "&lt;" 替换为 "&amp;lt;" 和 把 "&gt;" 替换为 "&amp;gt;"
         //方案：http://komlenic.com/246/encoding-entities-to-work-with-ckeditor-3/
-        renderText(writer, StringUtils.replaceEach(originalContent, originalChars, newChars));
+        else {
+            renderText(writer, StringUtils.replaceEach(originalContent, originalChars, newChars));
+        }
     }
 }
 

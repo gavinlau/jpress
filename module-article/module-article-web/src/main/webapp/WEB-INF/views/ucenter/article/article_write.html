@@ -102,7 +102,6 @@
     <section class="content">
         <form action="#(CPATH)/ucenter/article/doWriteSave" method="post" id="form">
             <input type="hidden" id="articleId" name="article.id" value="#(article.id ??)">
-            <input type="hidden" name="article.user_id" value="#(USER.id)">
             <input type="hidden" id="editModeId" name="article.edit_mode" value="#(editMode ??)">
             <div class="row">
                 <div class="col-xs-9">
@@ -127,12 +126,18 @@
                                 #if(option("web_fake_static_enable")) #option('web_fake_static_suffix') #end
                                 <input type="hidden" id="article-slug" name="article.slug">
                                 #if(!article)
-                                <a href="javascript:;" style="float: right;padding: 5px 0" onclick="doChangeEditor()">切换编辑器</a>
+                                <a href="javascript:;" style="float: right;padding: 5px 0" onclick="doChangeEditor()">
+                                    #if(editMode && editMode == 'html')
+                                    使用 markdown 编辑
+                                    #else
+                                    可视化编辑
+                                    #end
+                                </a>
                                 #end
                             </div>
                             <div class="col-sm-12" style="z-index: 9999;">
                                 <textarea id="editor1" name="article.content"
-                                          style="height: 467px;width: 100%;background-color: white">#CKEditorContent(article.content ??)</textarea>
+                                          style="height: 467px;width: 100%;background-color: white">#EditorContent(article.orignalContent ??)</textarea>
                             </div>
                         </div>
                         <div class="form-group">

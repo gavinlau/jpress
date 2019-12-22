@@ -45,8 +45,6 @@ import java.util.List;
 /**
  * @author Michael Yang 杨福海 （fuhai999@gmail.com）
  * @version V1.0
- * @Title: 文章前台页面Controller
- * @Package io.jpress.module.article.admin
  */
 @RequestMapping(value = "/ucenter/article", viewPath = "/WEB-INF/views/ucenter/")
 public class ArticleUCenterController extends UcenterControllerBase {
@@ -166,7 +164,9 @@ public class ArticleUCenterController extends UcenterControllerBase {
     public void doWriteSave() {
 
         Article article = getModel(Article.class, "article");
-        article.keep("id", "title", "content", "slug", "edit_mode", "summary", "thumbnail", "meta_keywords", "meta_description", "user_id");
+        article.keep("id", "title", "content", "slug", "edit_mode", "summary", "thumbnail", "meta_keywords", "meta_description");
+        article.setUserId(getLoginedUser().getId());
+
 
         if (article.getId() != null && notLoginedUserModel(article)) {
             renderJson(Ret.fail().set("message", "非法操作"));

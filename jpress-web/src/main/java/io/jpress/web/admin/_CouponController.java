@@ -18,6 +18,8 @@ package io.jpress.web.admin;
 import com.jfinal.aop.Inject;
 import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.Page;
+import io.jboot.db.model.Columns;
+import io.jboot.utils.StrUtil;
 import io.jboot.web.controller.annotation.RequestMapping;
 import io.jboot.web.validate.EmptyValidate;
 import io.jboot.web.validate.Form;
@@ -31,6 +33,7 @@ import io.jpress.service.CouponService;
 import io.jpress.service.CouponUsedRecordService;
 import io.jpress.web.base.AdminControllerBase;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -77,7 +80,7 @@ public class _CouponController extends AdminControllerBase {
         renderOkJson();
     }
 
-    public void doDel(){
+    public void doDel() {
         couponService.deleteById(getIdPara());
         renderOkJson();
     }
@@ -85,20 +88,87 @@ public class _CouponController extends AdminControllerBase {
     @EmptyValidate({
             @Form(name = "ids", message = "删除数据不能为空"),
     })
-    public void doDelByIds(){
+    public void doDelByIds() {
         Set<String> idsSet = getParaSet("ids");
         couponService.batchDeleteByIds(idsSet.toArray());
         renderOkJson();
     }
 
     public void takes() {
-        Page<CouponCode> page = couponCodeService.paginate(getPagePara(), 10);
+        Coupon coupon = couponService.findById(getPara());
+        setAttr("coupon", coupon);
+
+        Page<CouponCode> page = couponCodeService.paginateByCouponId(getPagePara(), 10, getParaToLong());
         setAttr("page", page);
+
         render("finance/coupon_takes.html");
     }
 
+    public void takeEdit() {
+        Coupon coupon = couponService.findById(getPara("cid"));
+        setAttr("coupon", coupon);
+
+        setAttr("code",couponCodeService.findById(getPara()));
+        render("finance/coupon_take_edit.html");
+    }
+
+
+    public void doCodeSave() {
+        Coupon coupon = couponService.findById(getPara("couponId"));
+        if (coupon == null) {
+            renderFailJson("该优惠券不存在或已经被删除。");
+            return;
+        }
+
+
+        CouponCode code = new CouponCode();
+        code.setId(getParaToLong("codeId"));
+        code.setCouponId(coupon.getId());
+        code.setTitle(coupon.getTitle());
+        code.setCode(StrUtil.uuid());
+        code.setUserId(getLong("userId"));
+        code.setStatus(getParaToInt("status"));
+        code.setValidTime(new Date());
+        code.setCreated(new Date());
+
+        couponCodeService.saveOrUpdate(code);
+        couponService.doSyncTakeCount(coupon.getId());
+
+        renderOkJson();
+    }
+
+    public void doCodeDel() {
+        CouponCode code = couponCodeService.findByCode(getPara());
+        if (code != null){
+            couponCodeService.deleteById(getPara());
+            couponService.doSyncTakeCount(code.getCouponId());
+        }
+
+
+        renderOkJson();
+    }
+
+    public void doCodeDelByIds() {
+        Set<String> ids = getParaSet("ids");
+        for (String id : ids) {
+            CouponCode code = couponCodeService.findByCode(id);
+            if (code != null){
+                couponCodeService.deleteById(getPara());
+                couponService.doSyncTakeCount(code.getCouponId());
+            }
+        }
+        renderOkJson();
+    }
+
+
     public void useds() {
-        Page<CouponUsedRecord> page = couponUsedRecordService.paginate(getPagePara(), 10);
+
+        Columns columns = Columns.create();
+        columns.add("code_id", getPara("codeid"));
+        columns.add("code_user_id", getPara("cuid"));
+        columns.add("coupon_id", getPara("coid"));
+
+        Page<CouponUsedRecord> page = couponUsedRecordService.paginate(getPagePara(), 10, columns);
         setAttr("page", page);
         render("finance/coupon_useds.html");
     }

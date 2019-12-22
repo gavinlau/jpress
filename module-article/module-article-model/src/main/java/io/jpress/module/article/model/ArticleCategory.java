@@ -68,6 +68,7 @@ public class ArticleCategory extends BaseArticleCategory<ArticleCategory> implem
      *
      * @return
      */
+    @Override
     public boolean isTop() {
         return getPid() != null && getPid() == 0;
     }
@@ -120,19 +121,23 @@ public class ArticleCategory extends BaseArticleCategory<ArticleCategory> implem
     }
 
     public String getLayerString() {
+
         if (layerNumber == 0) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < layerNumber; i++) {
-            if (i == 0)
+            if (i == 0) {
                 sb.append("|—");
-            else
+            } else {
                 sb.append("—");
+            }
         }
+
         return sb.toString();
     }
+
 
     public boolean isMyChild(long id) {
         if (childs == null || childs.isEmpty()) {
@@ -150,7 +155,9 @@ public class ArticleCategory extends BaseArticleCategory<ArticleCategory> implem
 
             if (category.getChilds() != null) {
                 boolean isChild = isMyChild(category.getChilds(), id);
-                if (isChild) return true;
+                if (isChild) {
+                    return true;
+                }
             }
         }
         return false;
@@ -162,8 +169,9 @@ public class ArticleCategory extends BaseArticleCategory<ArticleCategory> implem
                 return JFinal.me().getContextPath() + "/article/category/" + getSlug() + JPressOptions.getAppUrlSuffix();
             case TYPE_TAG:
                 return JFinal.me().getContextPath() + "/article/tag/" + getSlug() + JPressOptions.getAppUrlSuffix();
+            default:
+                return "";
         }
-        return "";
     }
 
 

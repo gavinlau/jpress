@@ -7,7 +7,7 @@
     <groupId>io.jpress</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.0</version>
+    <version>3.0</version>
 
     <modules>
         <module>codegen</module>
@@ -32,24 +32,25 @@
 
     <properties>
         <jdk.version>1.8</jdk.version>
-        <jboot.version>2.3.0</jboot.version>
+        <jboot.version>2.3.2</jboot.version>
         <jjwt.version>0.9.1</jjwt.version>
         <logback.version>1.2.3</logback.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <commons-io.version>2.6</commons-io.version>
         <commonmark.version>0.13.1</commonmark.version>
-        <aliyunoss.version>3.4.2</aliyunoss.version>
+        <aliyunoss.version>3.8.0</aliyunoss.version>
         <httpclient.version>4.5.3</httpclient.version>
         <fasterxml.version>2.10.1</fasterxml.version>
         <pay-java.version>2.12.9</pay-java.version>
         <guava.version>28.1-jre</guava.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-logging.version>1.2</commons-logging.version>
-        <commons-codec.version>1.10</commons-codec.version>
-        <jsceg.version>2.4.0</jsceg.version>
-
-        <lucene.version>8.3.0</lucene.version>
-        <elasticsearch.version>7.4.2</elasticsearch.version>
+        <commons-codec.version>1.13</commons-codec.version>
+        <jsceg.version>2.6.0</jsceg.version>
+        <slf4j.version>1.7.29</slf4j.version>
+        <fastjson.version>1.2.62</fastjson.version>
+        <lucene.version>8.3.1</lucene.version>
+        <elasticsearch.version>7.5.1</elasticsearch.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -191,37 +192,37 @@
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-commons</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-core</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-model</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-web</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-service-api</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
                 <groupId>io.jpress</groupId>
                 <artifactId>jpress-service-provider</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
 
             <dependency>
@@ -332,6 +333,36 @@
                 <version>${pay-java.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>
@@ -373,6 +404,7 @@
                 </configuration>
             </plugin>
 
+            <!-- 统一修改版本号：mvn versions:set -DnewVersion=3.0  -->
             <!-- mvn -N versions:update-child-modules  -->
             <!-- mvn versions:set -DnewVersion=2.0 -DprocessAllModules=true -DallowSnapshots=true -->
             <plugin>

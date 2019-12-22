@@ -9,6 +9,7 @@ import io.jboot.service.JbootServiceBase;
 import io.jpress.module.product.model.ProductComment;
 import io.jpress.module.product.service.ProductCommentService;
 import io.jpress.module.product.service.ProductService;
+import io.jpress.module.product.service.provider.task.ProductCommentReplyCountUpdateTask;
 import io.jpress.service.UserService;
 
 @Bean
@@ -21,6 +22,14 @@ public class ProductCommentServiceProvider extends JbootServiceBase<ProductComme
     private ProductService productService;
 
     @Override
+    public ProductComment findById(Object id) {
+        ProductComment comment = super.findById(id);
+        productService.join(comment, "product_id");
+        userService.join(comment, "user_id");
+        return comment;
+    }
+
+    @Override
     public long findCountByProductId(Long productId) {
         return DAO.findCountByColumn(Column.create("product_id",productId));
     }
@@ -31,6 +40,11 @@ public class ProductCommentServiceProvider extends JbootServiceBase<ProductComme
             deleteById(id);
         }
         return true;
+    }
+
+    @Override
+    public void deleteCacheById(Object id) {
+        DAO.deleteIdCacheById(id);
     }
 
     @Override
@@ -104,7 +118,14 @@ public class ProductCommentServiceProvider extends JbootServiceBase<ProductComme
 
     @Override
     public void doIncCommentReplyCount(long commentId) {
+        ProductCommentReplyCountUpdateTask.recordCount(commentId);
+    }
 
+    @Override
+    public boolean doChangeStatus(Long id, int status) {
+        ProductComment comment = findById(id);
+        comment.setStatus(status);
+        return update(comment);
     }
 
     private void joinParentUser(Page<ProductComment> p) {

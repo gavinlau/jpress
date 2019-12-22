@@ -75,7 +75,6 @@ public class _UserController extends AdminControllerBase {
     @Inject
     private MemberJoinedRecordService memberJoinedRecordService;
 
-
     @Inject
     private UserTagService userTagService;
 
@@ -576,7 +575,7 @@ public class _UserController extends AdminControllerBase {
 
     public void doUpdateUserTags() {
         Long[] tagIds = getTagIds(getParaValues("tag"));
-        userTagService.doUpdateTags(getLoginedUser().getId(), tagIds);
+        userTagService.doUpdateTags(getParaToLong("userId"), tagIds);
         renderOkJson();
     }
 
